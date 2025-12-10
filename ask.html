@@ -1,1 +1,14 @@
-<html><body><h2 class='glow center'>Ask AI</h2><input placeholder='Ask...'><button class='card-btn'>Ask</button><button class='home-btn' onclick="location.href='index.html'">🏠</button><link rel='stylesheet' href='css/style.css'></body></html>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Ask AI</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<header class="topbar"><div class="brand"><img src="assets/logo.svg" class="logo"><span class="brand-text glow">Roitx-study hub</span></div><div class="controls"><button class="card-btn" onclick="location.href='index.html'">Home</button></div></header>
+<main class="container">
+  <section class="card"><h3>Ask AI (Study Tips)</h3>
+    <input id="aiq" placeholder="Type your study question..." />
+    <div style="margin-top:8px"><button class="card-btn primary" onclick="askAI()">Ask</button></div>
+    <div id="aiAnswer" class="ai-answer muted" style="margin-top:10px"></div>
+  </section>
+</main>
+<button class="home-fab" onclick="location.href='index.html'">🏠</button>
+<script src="js/main.js"></script>
+</body></html>
