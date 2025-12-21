@@ -11,117 +11,176 @@
 <script src="auth.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
-body{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#e0e5ec;
-  overflow:hidden;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* BACKGROUND */
-.bg span{
-  position:absolute;
-  width:300px;height:300px;
-  border-radius:50%;
-  filter:blur(70px);
-  opacity:.45;
-  animation:float 10s infinite alternate;
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center; /* Horizontally center */
+  align-items: center;     /* Vertically center */
+  background: #e0e5ec;
+  overflow-x: hidden;      /* Side scroll rokne ke liye */
+  padding: 20px;           /* Mobile edges se touch na ho */
 }
-.bg span:nth-child(1){background:#ff7a3d;top:10%;left:5%}
-.bg span:nth-child(2){background:#5a2eff;bottom:10%;right:5%}
-@keyframes float{to{transform:translateY(-80px)}}
+
+/* BACKGROUND ANIMATION */
+.bg span {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: .45;
+  animation: float 10s infinite alternate;
+  z-index: -1;
+}
+.bg span:nth-child(1) { background: #ff7a3d; top: 10%; left: 5%; }
+.bg span:nth-child(2) { background: #5a2eff; bottom: 10%; right: 5%; }
+
+@keyframes float {
+  to { transform: translateY(-40px); }
+}
 
 /* WRAPPER */
-.wrapper{position:relative}
+.wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 380px; /* Desktop par ek limit set karta hai */
+  display: flex;
+  justify-content: center;
+}
 
 /* CHARACTER */
-.character{
-  width:150px;height:150px;
-  background:#e0e5ec;
-  border-radius:50%;
-  position:absolute;
-  top:-80px;left:50%;
-  transform:translateX(-50%);
-  box-shadow:10px 10px 20px #b8bec7,-10px -10px 20px #fff;
-  transition:.3s;
-}
-.eye{
-  width:12px;height:12px;background:#333;border-radius:50%;
-  position:absolute;top:60px;transition:.2s;
-}
-.eye.left{left:50px}
-.eye.right{right:50px}
-
-.mouth{
-  width:30px;height:10px;
-  border-bottom:3px solid #333;
-  border-radius:0 0 20px 20px;
-  position:absolute;top:90px;left:50%;
-  transform:translateX(-50%);
-  transition:.3s;
+.character {
+  width: 140px;
+  height: 140px;
+  background: #e0e5ec;
+  border-radius: 50%;
+  position: absolute;
+  top: -70px; /* Card ke upar overlap karne ke liye */
+  z-index: 10;
+  box-shadow: 8px 8px 16px #b8bec7, -8px -8px 16px #fff;
+  transition: .3s;
 }
 
-.hand{
-  width:55px;height:22px;
-  background:#e0e5ec;border-radius:20px;
-  position:absolute;top:60px;opacity:0;
-  box-shadow:5px 5px 10px #b8bec7,-5px -5px 10px #fff;
-  transition:.3s;
+.eye {
+  width: 12px;
+  height: 12px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 60px;
+  transition: .2s;
 }
-.hand.left{left:-6px;transform:rotate(-25deg)}
-.hand.right{right:-6px;transform:rotate(25deg)}
+.eye.left { left: 45px; }
+.eye.right { right: 45px; }
+
+.mouth {
+  width: 30px;
+  height: 10px;
+  border-bottom: 3px solid #333;
+  border-radius: 0 0 20px 20px;
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: .3s;
+}
+
+.hand {
+  width: 50px;
+  height: 20px;
+  background: #e0e5ec;
+  border-radius: 20px;
+  position: absolute;
+  top: 60px;
+  opacity: 0;
+  box-shadow: 4px 4px 8px #b8bec7, -4px -4px 8px #fff;
+  transition: .3s;
+}
+.hand.left { left: -5px; transform: rotate(-25deg); }
+.hand.right { right: -5px; transform: rotate(25deg); }
 
 /* STATES */
-.cover .eye{opacity:0}
-.cover .hand{opacity:1}
-.wrong .mouth{
-  border-bottom:none;
-  border-top:3px solid #333;
-  border-radius:20px 20px 0 0;
+.cover .eye { opacity: 0; }
+.cover .hand { opacity: 1; }
+.wrong .mouth {
+  border-bottom: none;
+  border-top: 3px solid #333;
+  border-radius: 20px 20px 0 0;
 }
 
 /* CARD */
-.card{
-  width:340px;
-  padding:100px 26px 34px;
-  border-radius:24px;
-  background:#e0e5ec;
-  box-shadow:14px 14px 28px #b8bec7,-14px -14px 28px #fff;
-  text-align:center;
+.card {
+  width: 100%; /* Mobile par full width lega */
+  padding: 90px 25px 35px;
+  border-radius: 28px;
+  background: #e0e5ec;
+  box-shadow: 18px 18px 30px #b8bec7, -18px -18px 30px #fff;
+  text-align: center;
 }
 
-h1{font-size:22px;color:#444}
-h2{margin-bottom:20px;color:#777}
+h1 { font-size: 24px; color: #444; margin-bottom: 5px; }
+h2 { font-size: 14px; margin-bottom: 25px; color: #777; font-weight: 400; }
 
-input{
-  width:100%;padding:14px;margin-bottom:16px;
-  border:none;border-radius:16px;background:#e0e5ec;
-  box-shadow:inset 7px 7px 14px #b8bec7,inset -7px -7px 14px #fff;
-  outline:none;
+input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 12px;
+  background: #e0e5ec;
+  box-shadow: inset 6px 6px 12px #b8bec7, inset -6px -6px 12px #fff;
+  outline: none;
+  font-size: 16px; /* Mobile par zoom issue nahi hoga */
 }
 
-.eyeBtn{
-  background:none;border:none;
-  font-size:20px;cursor:pointer;
-  margin-bottom:10px;
+.eyeBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  color: #666;
 }
 
-button.login{
-  width:100%;padding:14px;border:none;border-radius:16px;
-  background:#e0e5ec;font-weight:600;
-  box-shadow:8px 8px 16px #b8bec7,-8px -8px 16px #fff;
-}
-button.login:active{
-  box-shadow:inset 8px 8px 16px #b8bec7,inset -8px -8px 16px #fff;
+button.login {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: #e0e5ec;
+  color: #444;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 6px 6px 12px #b8bec7, -6px -6px 12px #fff;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-@media(max-width:420px){
-  .card{width:90%}
+button.login:active {
+  box-shadow: inset 4px 4px 8px #b8bec7, inset -4px -4px 8px #fff;
+  transform: scale(0.98);
+}
+
+/* Responsive adjustments */
+@media (max-width: 400px) {
+  .card {
+    padding: 80px 20px 30px;
+  }
+  .character {
+    width: 120px;
+    height: 120px;
+    top: -60px;
+  }
 }
 </style>
+
 </head>
 
 <body>
