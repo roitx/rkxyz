@@ -5,10 +5,8 @@
 <title>Login - Roitx</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
-<script src="auth.js"></script>
 
 <style>
 * {
@@ -21,11 +19,11 @@
 body {
   min-height: 100vh;
   display: flex;
-  justify-content: center; /* Horizontally center */
-  align-items: center;     /* Vertically center */
+  justify-content: center;
+  align-items: center;
   background: #e0e5ec;
-  overflow-x: hidden;      /* Side scroll rokne ke liye */
-  padding: 20px;           /* Mobile edges se touch na ho */
+  overflow-x: hidden;
+  padding: 20px;
 }
 
 /* BACKGROUND ANIMATION */
@@ -50,7 +48,7 @@ body {
 .wrapper {
   position: relative;
   width: 100%;
-  max-width: 380px; /* Desktop par ek limit set karta hai */
+  max-width: 380px;
   display: flex;
   justify-content: center;
 }
@@ -62,7 +60,7 @@ body {
   background: #e0e5ec;
   border-radius: 50%;
   position: absolute;
-  top: -70px; /* Card ke upar overlap karne ke liye */
+  top: -70px;
   z-index: 10;
   box-shadow: 8px 8px 16px #b8bec7, -8px -8px 16px #fff;
   transition: .3s;
@@ -109,20 +107,34 @@ body {
 /* STATES */
 .cover .eye { opacity: 0; }
 .cover .hand { opacity: 1; }
+
+/* SAD FACE STATE (WRONG PASSWORD) */
 .wrong .mouth {
   border-bottom: none;
-  border-top: 3px solid #333;
+  border-top: 3px solid #ff4d4d; /* Reddish sad mouth */
   border-radius: 20px 20px 0 0;
+  top: 100px;
+}
+
+/* SHAKE ANIMATION */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+.shake-effect {
+  animation: shake 0.5s ease-in-out;
 }
 
 /* CARD */
 .card {
-  width: 100%; /* Mobile par full width lega */
+  width: 100%;
   padding: 90px 25px 35px;
   border-radius: 28px;
   background: #e0e5ec;
   box-shadow: 18px 18px 30px #b8bec7, -18px -18px 30px #fff;
   text-align: center;
+  transition: transform 0.3s;
 }
 
 h1 { font-size: 24px; color: #444; margin-bottom: 5px; }
@@ -137,7 +149,7 @@ input {
   background: #e0e5ec;
   box-shadow: inset 6px 6px 12px #b8bec7, inset -6px -6px 12px #fff;
   outline: none;
-  font-size: 16px; /* Mobile par zoom issue nahi hoga */
+  font-size: 16px;
 }
 
 .eyeBtn {
@@ -168,26 +180,17 @@ button.login:active {
   transform: scale(0.98);
 }
 
-/* Responsive adjustments */
 @media (max-width: 400px) {
-  .card {
-    padding: 80px 20px 30px;
-  }
-  .character {
-    width: 120px;
-    height: 120px;
-    top: -60px;
-  }
+  .card { padding: 80px 20px 30px; }
+  .character { width: 120px; height: 120px; top: -60px; }
 }
 </style>
-
 </head>
-
 <body>
 
 <div class="bg"><span></span><span></span></div>
 
-<div class="wrapper">
+<div class="wrapper" id="loginWrapper">
   <div class="character" id="char">
     <div class="eye left"></div>
     <div class="eye right"></div>
@@ -196,11 +199,11 @@ button.login:active {
     <div class="hand right"></div>
   </div>
 
-  <div class="card">
+  <div class="card" id="card">
     <h1>Welcome Back!</h1>
     <h2>ROITX</h2>
 
-    <input id="email" placeholder="Email">
+    <input id="email" type="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
 
     <button id="toggleSign" class="eyeBtn">👁️</button>
@@ -209,31 +212,72 @@ button.login:active {
 </div>
 
 <script>
-const password=document.getElementById("password");
-const toggleBtn=document.getElementById("toggleSign");
-const char=document.getElementById("char");
+const passwordField = document.getElementById("password");
+const emailField = document.getElementById("email");
+const toggleBtn = document.getElementById("toggleSign");
+const char = document.getElementById("char");
+const card = document.getElementById("card");
 
-toggleBtn.onclick=()=>{
-  if(password.type==="password"){
-    password.type="text";
-    toggleBtn.textContent="🙈";
+// Show/Hide Password Toggle
+toggleBtn.onclick = () => {
+  if (passwordField.type === "password") {
+    passwordField.type = "text";
+    toggleBtn.textContent = "🙈";
     char.classList.add("cover");
-  }else{
-    password.type="password";
-    toggleBtn.textContent="👁️";
+  } else {
+    passwordField.type = "password";
+    toggleBtn.textContent = "👁️";
     char.classList.remove("cover");
   }
 };
 
-password.addEventListener("focus",()=>char.classList.add("cover"));
-password.addEventListener("blur",()=>char.classList.remove("cover"));
+// Character covers eyes when typing password
+passwordField.addEventListener("focus", () => {
+  if (passwordField.type === "password") char.classList.add("cover");
+});
+passwordField.addEventListener("blur", () => char.classList.remove("cover"));
 
-/* OPTIONAL: call this from auth.js on error */
-window.loginError=()=>{
-  char.classList.add("wrong");
-  setTimeout(()=>char.classList.remove("wrong"),1500);
+// ERROR FUNCTION: Call this when login fails
+window.loginError = () => {
+  char.classList.add("wrong"); // Sad face
+  card.classList.add("shake-effect"); // Shake card
+  
+  setTimeout(() => {
+    char.classList.remove("wrong");
+    card.classList.remove("shake-effect");
+  }, 1500);
 };
+
+// LOGIN LOGIC
+async function loginUser() {
+  const email = emailField.value;
+  const password = passwordField.value;
+
+  if (!email || !password) {
+    loginError();
+    return;
+  }
+
+  try {
+    // Supabase Auth Call
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      console.error("Login Error:", error.message);
+      loginError(); // Triggers Sad Face and Shake
+    } else {
+      alert("Login Success!");
+      window.location.href = "dashboard.html"; // Replace with your home page
+    }
+  } catch (err) {
+    loginError();
+  }
+}
 </script>
 
 </body>
 </html>
+
